@@ -1,0 +1,1 @@
+- npm run eject - enable css module - to scope the css to particular component
