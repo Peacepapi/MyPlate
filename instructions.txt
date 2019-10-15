@@ -1,1 +1,3 @@
 - npm run eject - enable css module - to scope the css to particular component
+- create containers and components folder. Containers are stateful components
+- create a higher order component Aux to wrap and return the children 
