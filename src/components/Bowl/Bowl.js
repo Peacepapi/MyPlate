@@ -18,7 +18,6 @@ const bowl = (props) => {
 
     if(transformIngredient.length === 0)
         transformIngredient = <p>Please add some ingredients into your bowl</p>
-    console.log(transformIngredient);
 
     return (
         <div className={classes.Bowl}>
