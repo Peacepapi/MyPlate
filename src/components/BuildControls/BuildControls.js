@@ -17,11 +17,14 @@ const buildControls = (props) => {
             label={ctrl.label}
             count={props.ingredients[ctrl.type]}
             added={()=> props.ingredientAdded(ctrl.type)}
+            deleted={()=> props.ingredientDeleted(ctrl.type)}
+            disabled={props.disabled[ctrl.type]}
         />
     })
 
     return (
         <div className={classes.BuildControls}>
+            <p>Total: <strong>{props.price.toFixed(2)}</strong></p>
             {buildControlsIngredients}
         </div>
     )
