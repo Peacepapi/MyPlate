@@ -15,10 +15,16 @@ class BowlBuilder extends Component {
         ingredients: {
             fillings: 0,
             rice: 0,
-            beans: 2,
-            cheese: 2
+            beans: 0,
+            cheese: 0
         },
         totalPrices: 4
+    }
+    updateState(priceChange, updatedIngredients) {
+        const oldPrice = this.state.totalPrices;
+        const newPrice = oldPrice + priceChange;
+        this.setState({totalPrices: newPrice, ingredients: updatedIngredients});
+        console.log(newPrice);
     }
 
     addIngredientHandler = (type) => {
@@ -29,18 +35,39 @@ class BowlBuilder extends Component {
         };
         updatedIngredients[type] = updatedCount;
         const priceAddition = INGREDIENT_PRICES[type];
-        const oldprice = this.state.totalPrices;
-        const newPrice = oldprice + priceAddition;
-        this.setState({totalPrices: newPrice, ingredients: updatedIngredients});
+        this.updateState(priceAddition, updatedIngredients);
+    }
+
+    deleteIngredientHandler = (type) => {
+        const oldCount = this.state.ingredients[type];
+        if(oldCount <= 0) return;
+        const updatedCount = oldCount - 1;
+        const updatedIngredients = {
+            ...this.state.ingredients
+        };
+        updatedIngredients[type] = updatedCount;
+        const priceSubtraction = -INGREDIENT_PRICES[type];
+        this.updateState(priceSubtraction, updatedIngredients);
     }
 
     render() {
+        const disabledInfo = {
+            ...this.state.ingredients
+        };
+
+        for(let key in disabledInfo) {
+            disabledInfo[key] = disabledInfo[key] <= 0;
+        }
+
         return (
             <Aux>
                 <Bowl ingredients={this.state.ingredients}/>
                 <BuildControls 
                     ingredientAdded={this.addIngredientHandler}
+                    ingredientDeleted={this.deleteIngredientHandler}
                     ingredients={this.state.ingredients}
+                    disabled={disabledInfo}
+                    price={this.state.totalPrices}
                 />
             </Aux>
         );
