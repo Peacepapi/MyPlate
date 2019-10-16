@@ -9,6 +9,7 @@ const INGREDIENT_PRICES = {
     beans: 1,
     cheese: 0.5
 }
+const BASE_PRICE = 4;
 
 class BowlBuilder extends Component {
     state = {
@@ -18,21 +19,32 @@ class BowlBuilder extends Component {
             beans: 0,
             cheese: 0
         },
-        totalPrices: 4
+        totalPrices: BASE_PRICE,
+        purchasable: false
     }
+
+    updatePurchaseState(updatedIngredients) {
+        const totalItems = Object.keys(updatedIngredients)
+            .map(inKey => {
+                return updatedIngredients[inKey];
+            })
+            .reduce((total, ele) =>  {
+                return total + ele
+            }, 0);
+        this.setState({purchasable: totalItems > 0})
+    }
+
     updateState(priceChange, updatedIngredients) {
         const oldPrice = this.state.totalPrices;
         const newPrice = oldPrice + priceChange;
         this.setState({totalPrices: newPrice, ingredients: updatedIngredients});
-        console.log(newPrice);
+        this.updatePurchaseState(updatedIngredients);
     }
 
     addIngredientHandler = (type) => {
         const oldCount = this.state.ingredients[type];
         const updatedCount = oldCount + 1;
-        const updatedIngredients = {
-            ...this.state.ingredients
-        };
+        const updatedIngredients = {...this.state.ingredients};
         updatedIngredients[type] = updatedCount;
         const priceAddition = INGREDIENT_PRICES[type];
         this.updateState(priceAddition, updatedIngredients);
@@ -42,9 +54,8 @@ class BowlBuilder extends Component {
         const oldCount = this.state.ingredients[type];
         if(oldCount <= 0) return;
         const updatedCount = oldCount - 1;
-        const updatedIngredients = {
-            ...this.state.ingredients
-        };
+        const updatedIngredients = {...this.state.ingredients
+};
         updatedIngredients[type] = updatedCount;
         const priceSubtraction = -INGREDIENT_PRICES[type];
         this.updateState(priceSubtraction, updatedIngredients);
@@ -68,6 +79,7 @@ class BowlBuilder extends Component {
                     ingredients={this.state.ingredients}
                     disabled={disabledInfo}
                     price={this.state.totalPrices}
+                    purchasable={this.state.purchasable}
                 />
             </Aux>
         );
