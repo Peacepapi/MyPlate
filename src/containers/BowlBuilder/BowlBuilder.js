@@ -21,7 +21,7 @@ class BowlBuilder extends Component {
             beans: 0,
             cheese: 0
         },
-        totalPrices: BASE_PRICE,
+        totalPrice: BASE_PRICE,
         sPurchasable: false,
         isPurchasing: false,
     }
@@ -38,9 +38,9 @@ class BowlBuilder extends Component {
     }
 
     updateState(priceChange, updatedIngredients) {
-        const oldPrice = this.state.totalPrices;
+        const oldPrice = this.state.totalPrice;
         const newPrice = oldPrice + priceChange;
-        this.setState({totalPrices: newPrice, ingredients: updatedIngredients});
+        this.setState({totalPrice: newPrice, ingredients: updatedIngredients});
         this.updatePurchaseState(updatedIngredients);
     }
 
@@ -71,6 +71,10 @@ class BowlBuilder extends Component {
         this.setState({isPurchasing: false});
     }
 
+    purchaseContinueHandler = () => {
+        alert('Yerrrr');
+    }
+
     render() {
         const disabledInfo = {
             ...this.state.ingredients
@@ -85,7 +89,12 @@ class BowlBuilder extends Component {
                 <Modal
                     showModal={this.state.isPurchasing}
                     modalClosed={this.purchaseCancelHandler}>
-                    <OrderSummary ingredients={this.state.ingredients}/>
+                    <OrderSummary 
+                        ingredients={this.state.ingredients}
+                        cancelPurchase={this.purchaseCancelHandler}
+                        continuePurchase={this.purchaseContinueHandler}
+                        totalPrice={this.state.totalPrice}
+                    />
                 </Modal>
                 <Bowl ingredients={this.state.ingredients}/>
                 <BuildControls 
@@ -93,7 +102,7 @@ class BowlBuilder extends Component {
                     ingredientDeleted={this.deleteIngredientHandler}
                     ingredients={this.state.ingredients}
                     disabled={disabledInfo}
-                    price={this.state.totalPrices}
+                    price={this.state.totalPrice}
                     isPurchasable={this.state.isPurchasable}
                     order={this.purchaseHandler}
                 />
