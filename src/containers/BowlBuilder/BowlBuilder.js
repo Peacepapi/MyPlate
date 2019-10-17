@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import Aux from '../../hoc/Aux';
 import Bowl from '../../components/Bowl/Bowl';
-import BuildControls from '../../components/BuildControls/BuildControls';
+import BuildControls from '../../components/Bowl/BuildControls/BuildControls';
+import Modal from '../../components/UI/Modal/Modal';
+import OrderSummary from '../../components/Bowl/OrderSummary/OrderSummary';
 
 const INGREDIENT_PRICES = {
     fillings: 2,
@@ -20,7 +22,8 @@ class BowlBuilder extends Component {
             cheese: 0
         },
         totalPrices: BASE_PRICE,
-        purchasable: false
+        sPurchasable: false,
+        isPurchasing: false,
     }
 
     updatePurchaseState(updatedIngredients) {
@@ -31,7 +34,7 @@ class BowlBuilder extends Component {
             .reduce((total, ele) =>  {
                 return total + ele
             }, 0);
-        this.setState({purchasable: totalItems > 0})
+        this.setState({isPurchasable: totalItems > 0})
     }
 
     updateState(priceChange, updatedIngredients) {
@@ -54,11 +57,18 @@ class BowlBuilder extends Component {
         const oldCount = this.state.ingredients[type];
         if(oldCount <= 0) return;
         const updatedCount = oldCount - 1;
-        const updatedIngredients = {...this.state.ingredients
-};
+        const updatedIngredients = {...this.state.ingredients};
         updatedIngredients[type] = updatedCount;
         const priceSubtraction = -INGREDIENT_PRICES[type];
         this.updateState(priceSubtraction, updatedIngredients);
+    }
+
+    purchaseHandler = () => {
+        this.setState({isPurchasing: true});
+    }
+
+    purchaseCancelHandler = () => {
+        this.setState({isPurchasing: false});
     }
 
     render() {
@@ -72,6 +82,11 @@ class BowlBuilder extends Component {
 
         return (
             <Aux>
+                <Modal
+                    showModal={this.state.isPurchasing}
+                    modalClosed={this.purchaseCancelHandler}>
+                    <OrderSummary ingredients={this.state.ingredients}/>
+                </Modal>
                 <Bowl ingredients={this.state.ingredients}/>
                 <BuildControls 
                     ingredientAdded={this.addIngredientHandler}
@@ -79,7 +94,8 @@ class BowlBuilder extends Component {
                     ingredients={this.state.ingredients}
                     disabled={disabledInfo}
                     price={this.state.totalPrices}
-                    purchasable={this.state.purchasable}
+                    isPurchasable={this.state.isPurchasable}
+                    order={this.purchaseHandler}
                 />
             </Aux>
         );
